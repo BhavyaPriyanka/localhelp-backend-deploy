@@ -14,8 +14,8 @@ pipeline{
 
         string(
 
-            name: 'VERSION'
-            defaultValue: '1.0.0'
+            name: 'VERSION',
+            defaultValue: '1.0.0',
             description:'WHAT is the app version'
         )
     }
@@ -24,7 +24,7 @@ pipeline{
 
         stage('PRINT THE VERSION') {
             steps {
-               echo "APP VERSION IS: ${paramas.VERSION} "
+               echo "APP VERSION IS: ${params.VERSION} "
             }
         }
     }
