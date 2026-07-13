@@ -14,9 +14,9 @@ pipeline{
 
         string(
 
-            name: "VERSION"
-            defaultValue: "1.0.0"
-            description:"WHAT is the app version"
+            name: 'VERSION'
+            defaultValue: '1.0.0'
+            description:'WHAT is the app version'
         )
     }
 
