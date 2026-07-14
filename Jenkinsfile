@@ -28,6 +28,33 @@ pipeline{
             }
         }
     }
-}
+
+        stage('Terraform INIT') {
+                steps {
+                sh """
+                    cd terraform
+                    terraform init
+                """
+                }
+            }
+
+        stage('Terraform PLAN') {
+            steps {
+            sh """
+                cd terraform
+                terraform plan -var="app_version=${params.VERSION}"
+            """
+            }
+
+        // stage('Terraform DEPLOY') {
+        //     steps {
+        //     sh """
+        //         cd terraform
+        //         terraform apply -auto-approve
+        //     """
+        //     }
+        // }
+        }
+
 
 
