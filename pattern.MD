@@ -1,3 +1,6 @@
+# Complete Runtime Flow
+
+```text
 Terraform Apply
 │
 ├── Read Data Sources
@@ -7,7 +10,7 @@ Terraform Apply
 │   ├── ALB Listener ARN
 │   └── Latest Base AMI
 │
-├── Generate RSA Key
+├── Generate RSA Key Pair
 │
 ├── Upload Public Key to AWS
 │
@@ -19,18 +22,19 @@ Terraform Apply
 │   └── Boot Linux
 │
 ├── SSH into Builder
-│   ├── Copy backend.sh
+│   ├── Upload backend.sh
 │   ├── Execute Script
 │   ├── Install Packages
-│   ├── Clone Code
+│   ├── Clone Repository
 │   ├── Build Application
 │   ├── Configure Services
 │   └── Backend Ready
 │
 ├── Stop Builder Instance
 │
-├── Create AMI
-│   └── Snapshot Root Disk
+├── Create EBS Snapshot
+│
+├── Register AMI
 │
 ├── Terminate Builder Instance
 │
@@ -55,18 +59,59 @@ Terraform Apply
     │
     ▼
 Client
-   │
-   ▼
-ALB
-   │
-   ▼
+    │
+    ▼
+Application Load Balancer
+    │
+    ▼
 Listener Rule
-   │
-   ▼
+    │
+    ▼
 Target Group
-   │
-   ▼
-Healthy EC2 (from ASG)
-   │
-   ▼
+    │
+    ▼
+Healthy EC2 Instance
+    │
+    ▼
 Backend Application (Port 8080)
+```
+
+# Final Architecture
+
+```
+Terraform
+    │
+    ▼
+Builder EC2
+    │
+    ├── Install Software
+    ├── Configure Backend
+    └── Create Golden AMI
+            │
+            ▼
+      Launch Template
+            │
+            ▼
+     Auto Scaling Group
+            │
+            ▼
+      Backend EC2 Instances
+            │
+            ▼
+        Target Group
+            │
+            ▼
+Application Load Balancer
+            │
+            ▼
+          End Users
+```
+
+This deployment pattern is called the **Golden AMI Pattern**.
+
+- Builder EC2 is temporary.
+- Software installation happens only once.
+- Golden AMI is created.
+- Builder EC2 is terminated.
+- Production EC2 instances are launched from the Golden AMI through the Auto Scaling Group.
+- ALB sends traffic only to healthy backend instances.
