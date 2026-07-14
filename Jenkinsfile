@@ -27,7 +27,7 @@ pipeline{
                echo "APP VERSION IS: ${params.VERSION} "
             }
         }
-    }
+    
 
         stage('Terraform INIT') {
                 steps {
@@ -56,5 +56,5 @@ pipeline{
         // }
         }
 
-}
+}}
 
