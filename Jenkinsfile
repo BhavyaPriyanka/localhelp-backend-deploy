@@ -7,7 +7,7 @@ pipeline{
     options {
         timeout(time: 30, unit: 'MINUTES')
         disableConcurrentBuilds()
-        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm'])
+        
     }
 
     parameters{
