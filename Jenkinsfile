@@ -74,14 +74,14 @@ pipeline{
             """
             }
 
-        // stage('Terraform DEPLOY') {
-        //     steps {
-        //     sh """
-        //         cd terraform
-        //         terraform apply -auto-approve
-        //     """
-        //     }
-        // }
+        stage('Terraform DEPLOY') {
+            steps {
+            sh """
+                cd terraform
+                terraform apply -auto-approve
+            """
+            }
+        }
         }
 
 }}
