@@ -73,6 +73,7 @@ pipeline{
                 terraform plan -var="app_version=${params.VERSION}"
             """
             }
+        }
 
         stage('Terraform DEPLOY') {
             steps {
@@ -83,6 +84,5 @@ pipeline{
             }
         }
         }
-
-}}
+}
 
