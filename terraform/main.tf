@@ -63,7 +63,7 @@ resource "null_resource" "backend" {
       "set -euxo pipefail",
       "ls -l /tmp",
       "chmod +x /tmp/${var.common_tags.Component}.sh",
-      "bash -x /tmp/${var.common_tags.Component}.sh ${var.common_tags.Component} ${var.environment}",
+      "bash -x /tmp/${var.common_tags.Component}.sh ${var.common_tags.Component} ${var.environment} ${var.app_version}",
       "sudo git config --global --add safe.directory /opt/localhelp/backend"
     ]
   }
