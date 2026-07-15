@@ -20,7 +20,26 @@ pipeline{
         )
     }
 
+    
+
     stages {
+
+        stage('Environment Check') {
+                    steps {
+                        sh '''
+                            hostname
+                            pwd
+                            whoami
+                            terraform version
+                        '''
+                    }
+                }
+
+            stage('Checkout') {
+                    steps {
+                        checkout scm
+                    }
+                }
 
         stage('PRINT THE VERSION') {
             steps {
@@ -37,6 +56,15 @@ pipeline{
                 """
                 }
             }
+
+              stage('Terraform Format') {
+                        steps {
+                            sh '''
+                                cd terraform
+                                terraform fmt -check
+                            '''
+                        }
+                    }
 
         stage('Terraform PLAN') {
             steps {
