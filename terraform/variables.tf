@@ -1,25 +1,25 @@
-variable "project_name"{
-    default = "localhelp"
+variable "project_name" {
+  default = "localhelp"
 }
 
-variable "environment"{
-    default = "dev"
+variable "environment" {
+  default = "dev"
 }
 
-variable "common_tags"{
-    default = {
-        Project = "localhelp"
-        Environment = "dev"
-        Terraform = "true"
-        Component = "backend"
-    }
+variable "common_tags" {
+  default = {
+    Project     = "localhelp"
+    Environment = "dev"
+    Terraform   = "true"
+    Component   = "backend"
+  }
 }
 
 variable "zone_name" {
   default = "localhelp.store"
 }
 
-variable "app_version"{
-    
+variable "app_version" {
+
 }
 

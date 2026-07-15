@@ -1,15 +1,15 @@
 module "backend" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
+  source = "terraform-aws-modules/ec2-instance/aws"
 
   name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
 
-  instance_type          = "t3.micro"
+  instance_type = "t3.micro"
 
-root_block_device = {
-  size                  = 40
-  type                  = "gp3"
-  delete_on_termination = true
-}
+  root_block_device = {
+    size                  = 40
+    type                  = "gp3"
+    delete_on_termination = true
+  }
   vpc_security_group_ids = [data.aws_ssm_parameter.backend_sg_id.value]
   subnet_id              = local.private_subnet_id
   ami                    = data.aws_ami.ami_info.id
@@ -72,27 +72,27 @@ resource "null_resource" "backend" {
 resource "aws_ec2_instance_state" "backend_stop" {
   instance_id = module.backend.id
   state       = "stopped"
-  depends_on  = [ null_resource.backend ]
+  depends_on  = [null_resource.backend]
 }
 
 resource "aws_ami_from_instance" "backend_ami" {
   name               = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   source_instance_id = module.backend.id
 
-  depends_on = [ aws_ec2_instance_state.backend_stop ]
+  depends_on = [aws_ec2_instance_state.backend_stop]
 }
 
 resource "null_resource" "backend_delete" {
- triggers = {
-      instance_id = module.backend.id # this will be triggered everytime instance is created
-    }
+  triggers = {
+    instance_id = module.backend.id # this will be triggered everytime instance is created
+  }
 
   provisioner "local-exec" {
     command = "aws ec2 terminate-instances --instance-ids ${module.backend.id}"
   }
 
 
-  depends_on = [ aws_ami_from_instance.backend_ami ]
+  depends_on = [aws_ami_from_instance.backend_ami]
 }
 
 resource "aws_lb_target_group" "backend" {
@@ -100,7 +100,7 @@ resource "aws_lb_target_group" "backend" {
   port     = 8080
   protocol = "HTTP"
   vpc_id   = data.aws_ssm_parameter.vpc_id.value
-   health_check {
+  health_check {
     path                = "/health"
     protocol            = "HTTP"
     matcher             = "200"
@@ -116,10 +116,10 @@ resource "aws_launch_template" "backend" {
 
   instance_initiated_shutdown_behavior = "terminate"
 
-  instance_type = "t3.micro"
+  instance_type          = "t3.micro"
   update_default_version = true
 
-  vpc_security_group_ids = [ data.aws_ssm_parameter.backend_sg_id.value ]
+  vpc_security_group_ids = [data.aws_ssm_parameter.backend_sg_id.value]
 
   tag_specifications {
     resource_type = "instance"
@@ -127,7 +127,7 @@ resource "aws_launch_template" "backend" {
     tags = merge(
       var.common_tags,
       {
-      Name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
+        Name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
       }
     )
   }
@@ -146,11 +146,11 @@ resource "aws_autoscaling_group" "backend" {
     id      = aws_launch_template.backend.id
     version = "$Latest"
   }
-  vpc_zone_identifier       = split(",",data.aws_ssm_parameter.private_subnet_ids.value)
+  vpc_zone_identifier = split(",", data.aws_ssm_parameter.private_subnet_ids.value)
 
   instance_refresh {
     strategy = "Rolling"
-    preferences{
+    preferences {
       min_healthy_percentage = 50
     }
     triggers = ["launch_template"]
@@ -168,22 +168,22 @@ resource "aws_autoscaling_group" "backend" {
 
   tag {
     key                 = "Project"
-    value               = "${var.project_name}"
+    value               = var.project_name
     propagate_at_launch = false
   }
 }
 
 resource "aws_autoscaling_policy" "backend" {
   name                   = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
-  policy_type           = "TargetTrackingScaling"
+  policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = aws_autoscaling_group.backend.name
 
-   target_tracking_configuration {
+  target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-     target_value = 10.0
-}
+    target_value = 10.0
+  }
 }
 
 resource "aws_lb_listener_rule" "backend" {
@@ -196,7 +196,7 @@ resource "aws_lb_listener_rule" "backend" {
   }
 
   condition {
-     host_header {
+    host_header {
       values = ["backend.app-${var.environment}.${var.zone_name}"]
     }
   }
